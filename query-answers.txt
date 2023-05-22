@@ -193,7 +193,7 @@ where year(v.release_date) = 2018 and a.name like 'gioco dell%' ;
 
 9- Selezionare i giocatori che hanno giocato al gioco più atteso del 2018 in un torneo del 2019 (3306)
 
-select p.name  
+select p.*  
 from players p 
 join player_tournament pt on p.id = pt.player_id 
 join tournaments t on pt.tournament_id = t.id 
@@ -206,8 +206,45 @@ where year(v.release_date) = 2018 and t.`year` = 2019 and a.name like 'gioco pi�
 ##Bonus
 10- Selezionare i dati della prima software house che ha rilasciato un gioco, assieme ai dati del gioco stesso (software house id : 5)
 
+select *
+from software_house sh
+join videogames v on v.software_house_id = sh.id
+order by v.release_date
+limit 1;
+
 11- Selezionare i dati del videogame (id, name, release_date, totale recensioni) con più recensioni (videogame id : potrebbe uscire 449 o 398, sono entrambi a 20)
+-----Versione Pro-------
+select v.*, count(*) as 'rev_count'
+from videogames v
+join reviews r on v.id = r.videogame_id
+group by v.id
+having rev_count = (
+	select v.*, count(*) as 'rev_count'
+	from videogames v
+	join reviews r on v.id = r.videogame_id
+	group by v.id
+	order by rev_count desc
+	limit 1;
+)
+order by rev_count desc;
 
 12- Selezionare la software house che ha vinto più premi tra il 2015 e il 2016 (software house id : potrebbe uscire 3 o 1, sono entrambi a 3)
 
+select sh./, count(*) as 'award_count
+from software_house sh
+join videogames v on sh.id = v.software_house_id
+join award_videogame av on v.id = av.videogame_id
+where av.'year' between 2015 and 2016
+group by sh.id
+order by award_count desc
+limit 1;
+
 13- Selezionare le categorie dei videogame i quali hanno una media recensioni inferiore a 2 (10)
+
+select unique c.name
+from videogames v
+join rewiews r on v.id = r.videogame_id
+join category:videogame cv on v.id = cv.videogame_id
+join categories c on cv.category_id = c.id
+group by v.id, c.id
+having avg(r.rating) < 2;
